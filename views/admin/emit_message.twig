@@ -1,0 +1,79 @@
+{% extends 'user_layout.twig' %}
+{% block title %}Send an Announcement{% endblock %}
+{% block content %}
+    <main class="w-full max-w-md mx-auto p-6" id="content">
+        <div id="reply"></div>
+        <div class="mt-7 bg-white border border-gray-200 rounded-xl shadow-sm dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-4 sm:p-7">
+                <div class="text-center">
+                    <h1 class="block text-2xl font-bold text-gray-800 dark:text-white">Send an Announcement</h1>
+                </div>
+
+                <div class="mt-5">
+                    <!-- announcement Form -->
+                    <form class="mt-6" id="announcement" action="" method="post">
+                        <div class="grid gap-y-4">
+                            <!-- Form Group for announcement -->
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <label for="announcement" class="block text-sm font-medium leading-6 text-gray-900 dark:text-white">Announcement</label>
+                                </div>
+                                <div class="mt-2">
+                                    <input id="input" name="announcement" autocomplete="off" value="" type="text" class="c-input focus:ring-blue-500 focus:border-blue-500">
+                                </div>
+                            </div>
+                            <!-- End Form Group for announcement -->
+
+                            <button type="submit" class="c-form-btn">Send</button>
+                        </div>
+                    </form>
+                    <!-- End announcement Form -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io("{{ env('WS_HOST') }}");
+        let form = document.getElementById('announcement')
+        let input = document.getElementById('input')
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            if (input.value) {
+                socket.emit('announcement', input.value)
+                input.value = ''
+            }
+        })
+
+        socket.on('reply', function (msg) {
+            let html = "<div class='bg-teal-50 border-t-2 border-teal-500 rounded-lg p-4 mb-4 dark:bg-teal-800/30' role='alert'>" +
+                "<div class='flex'>" +
+                "<div class='flex-shrink-0'>" +
+                "<span class='inline-flex justify-center items-center size-8 rounded-full border-4 border-teal-100 bg-teal-200 text-teal-800 dark:border-teal-900 dark:bg-teal-800 dark:text-teal-400'>" +
+                "<svg class='flex-shrink-0 size-4' xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
+                "<path d='M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z'/>" +
+                "<path d='m9 12 2 2 4-4'/>" +
+                "</svg>" +
+                "</span>" +
+                "</div>" +
+                "<div class='ms-3'>" +
+                "<h3 class='text-gray-800 font-semibold dark:text-white'>Success!</h3>" +
+                "<p class='text-sm text-gray-700 dark:text-gray-400'>Message " + msg + " sent successfully!</p>" +
+                "</div>" +
+                "</div>" +
+                "</div>"
+
+            let reply_div = document.getElementById('reply')
+            reply_div.innerHTML = html
+
+            function clearReplyDiv() {
+                let reply_div = document.getElementById('reply')
+                reply_div.innerHTML = ''
+            }
+
+            setTimeout(() => clearReplyDiv(), 10000)
+        })
+    </script>
+{% endblock %}

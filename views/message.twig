@@ -1,0 +1,43 @@
+{% extends 'user_layout.twig' %}
+{% block title %}Receive Message{% endblock %}
+{% block content %}
+    <div class="flex-1 flex items-center justify-center h-screen overscroll-none" id="content">
+        <div class="text-center">
+            <h1 class="text-6xl font-chinese font-bold text-gray-800 dark:text-white mb-4" id="curr">Welcome to I-creatorz!</h1>
+            <p class="text-3xl font-chinese text-gray-600 dark:text-gray-300 mb-8" id="prev"></p>
+        </div>
+    </div>
+    <audio id="audio" class="hidden" controls muted autoplay>
+        <source src="{{ asset('/audio/beep.ogg') }}" type="audio/ogg">
+        <source src="{{ asset('/audio/beep.mp3') }}" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script>
+        const socket = io("{{ env('WS_HOST') }}");
+        let curr = document.getElementById('curr')
+        let prev = document.getElementById('prev')
+        let audio = document.getElementById('audio')
+
+        socket.on('announcement', function (msg) {
+            prev.innerText = curr.innerText
+            curr.innerText = msg
+            audio.muted = false
+            audio.play()
+
+            socket.emit('reply', msg)
+        })
+
+        // Calculate and set the height dynamically
+        function setDynamicHeight() {
+            let windowHeight = window.innerHeight;
+            let header = document.getElementById('header').offsetHeight;
+            let contentContainer = document.getElementById('content');
+            contentContainer.style.maxHeight = windowHeight-header-100 + 'px';
+        }
+
+        // Call the function on page load and window resize
+        window.addEventListener('load', setDynamicHeight);
+        window.addEventListener('resize', setDynamicHeight);
+    </script>
+{% endblock %}

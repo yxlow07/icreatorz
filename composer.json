@@ -1,0 +1,20 @@
+{
+    "name": "yxlow/icreatorz",
+    "autoload": {
+        "psr-4": {
+            "core\\": "./core",
+            "app\\": "./app"
+        }
+    },
+    "authors": [
+        {
+            "name": "Yu Xuan"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.23",
+        "vlucas/phpdotenv": "^5.6",
+        "twig/twig": "^3.0",
+        "elephantio/elephant.io": "^4.7"
+    }
+}
